@@ -11,6 +11,83 @@
     <h1>Estados</h1>
 
     <script>
-        // ...
+        function ajax(config) {
+            const xhr = new XMLHttpRequest()
+
+            //Abrindo requisição do tipo GET. true == assincrona
+            xhr.open(config.metodo, config.url, true)
+            //Quando carregado
+            xhr.onload = e => {
+                if (xhr.status === 200) {
+                    config.sucesso(xhr.response)
+                    //Em caso de erro, pega status e mensagem referente à esse status de erro
+                } else if (xhr.status >= 400) {
+                    config.erro({
+                        codigo: xhr.status,
+                        texto: xhr.statusText
+                    })
+                }
+            }
+
+            //Envia requisição
+            xhr.send()
+        }
+
+        //Função que cria uma tabela e adiciona no HTML com base em uma lista de estados fornecidas
+        //A lista de estado é no formato json, porém é feito um parse para que seja visto como objeto
+        function criarTabela(estados) {
+            //Para cada 'estado' dentro de estados, faça:
+            //map() função que executa determinada ação para todos os elementos de um array
+            const linhas = estados.map(estado => {
+                /*
+                Dados que vem do json estados.json:
+                id,
+                nome,
+                sigla
+                */
+                const tdId = document.createElement('td')
+                tdId.innerHTML = estado.id
+
+                const tdNome = document.createElement('td')
+                tdNome.innerHTML = estado.nome
+
+                const tdSigla = document.createElement('td')
+                tdSigla.innerHTML = estado.sigla
+
+                //Criando linha da tabela
+                const tr = document.createElement('tr')
+
+                //Atribuindo as td's criadas como filhas da tr(table row)
+                tr.appendChild(tdId)
+                tr.appendChild(tdNome)
+                tr.appendChild(tdSigla)
+
+                return tr
+            })
+
+            //Criando tabela para atribuir as linhas
+            const tabela = document.createElement('table')
+
+            //Para cada linha(representa um estado e seu: id, nome e sigla) adiciona essa linha como filha da tabela
+            linhas.forEach(linha => tabela.appendChild(linha))
+            //Adiciona a tabela como ultima filha do body
+            document.body.appendChild(tabela)
+        }
+
+        ajax({
+            url: "dados/estados.json",
+            metodo: "get",
+            sucesso(resposta) {
+                //Cast da resposta para JSON (xhr.response)
+                const estados = JSON.parse(resposta)
+                //Cria tabela com base na lista de estados
+                criarTabela(estados)
+            },
+            erro(e) {
+                //Cria elemento de texto HTML e dentro dele passa as informações vindas da xhr request para response error.
+                const msg = document.createTextNode(`${e.codigo}: ${e.texto}`)
+                document.body.appendChild(msg)
+            }
+        })
     </script>
 </body>
