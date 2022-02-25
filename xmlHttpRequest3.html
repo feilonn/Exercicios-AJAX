@@ -11,6 +11,48 @@
     <h1>Estados</h1>
 
     <script>
-        // ...
+        function ajax(config) {
+            const xhr = new XMLHttpRequest()
+            xhr.open(config.metodo, config.url, true)
+
+            //método que captura sempre que o status da requisição é alterado
+            xhr.onreadystatechange = e => {
+                if (xhr.readyState == 4) {
+                    if (xhr.status === 200) {
+                        config.sucesso(xhr.responseXML)
+                    } else if (xhr.status >= 400) {
+                        config.erro({
+                            codigo: xhr.status,
+                            texto: xhr.statusText
+                        })
+                    }
+                }
+
+            }
+
+            xhr.send()
+        }
+
+        ajax({
+            url: "dados/estados.xml",
+            metodo: "get",
+            sucesso(resposta) {
+                //Lista de elementos com a tag <estado>
+                const estados = resposta.getElementsByTagName('estado')
+                //Convertendo a lista para array e percorrendo ela
+                const itens = Array.from(estados).reduce(
+                    //Montando uma grande string com os nomes do estados, concatenando a cada um deles a tag <li></li>
+                    (html, estado) => html + `<li>${estado.attributes.nome.value}</li>`, ''
+                )
+                //Insere logo antes do fim do <body> a tag <ul> e seus <li> como sendo a string montada anteriormente
+                document.body.insertAdjacentHTML('beforeend', `<ul>${itens}</ul>`)
+            },
+            erro(e) {
+                //e.codigo e e.erro são atributos do objetos passados na chamada de config.erro na função ajax
+                const msg = document.createTextNode(`${e.codigo}: ${e.texto}`)
+                //Adiciona mensagem em caso de erro
+                document.body.appendChild(msg)
+            }
+        })
     </script>
 </body>
