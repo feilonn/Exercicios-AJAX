@@ -14,6 +14,24 @@
     <div id="post"></div>
 
     <script>
-        // ...
+        function exibirResultado(id, dados) {
+            //A resposta vem como json, faz-se cast para string
+            const texto = JSON.stringify(dados)
+            //Pega o elemento com id desejado e adiciona nele o json convertido para string
+            document.getElementById(id).innerHTML = texto
+        }
+
+        //axios('parOuImpar?numero=8').then(resp => exibirResultado('get', resp.data))
+
+        axios.get('parOuImpar', {
+            params: {
+                numero: 9
+            }
+        }).then(resp => exibirResultado('get', resp.data))
+
+        axios.post('formulario', {
+            nome: 'Raul',
+            sobrenome: 'Correia'
+        }).then(resp => exibirResultado('post', resp.data))
     </script>
 </body>
