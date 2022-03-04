@@ -37,4 +37,13 @@ app.post('/upload', (req, res) => {
 })
 
 app.get('/teste', (req, res) => res.send('Ok😀'))
+
+app.post('/formulario', (req, res) => {
+    //Enviando como resposta um objeto que faz spread no corpo da requisição e também possui um id (estático)
+    res.send({
+        ...req.body,
+        id: 1
+    })
+})
+
 app.listen(8080, () => console.log('Executando na porta 8080! 🤖'))

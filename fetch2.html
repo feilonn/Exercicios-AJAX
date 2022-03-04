@@ -29,6 +29,58 @@
     </form>
     <div id="resultado"></div>
     <script>
-        // ...
+        //Capturando submite do formulatio onde 'usuarioForm' é o name do formulario
+        document.usuarioForm.onsubmit = async e => {
+            //Previnindo comportamento padrão de submit do browser para poder manipular via ajax
+            e.preventDefault()
+
+            //captura o elemento que irá disparar o evento em questão
+            const form = e.target
+            //Cria um FormData com as informações presentes no form
+            const data = new FormData(form)
+            //É possível manipular as informações desse FormData, como adicionar, por exemplo:
+            data.append('Raul', true)
+            
+            const options = {
+                //Captura a propriedade method do form
+                method: form.method,
+                //body que contem os dados vindos do formulario para passar pro backend
+                body: new URLSearchParams(data)
+            }
+
+            //Div onde será exibido o resultado do json
+            const resultado = document.getElementById('resultado')
+            
+            /* MÉTODO UTILIZANDO PROMISES */
+
+            //Chama o fetch passando como parametros:
+            // propriedade action ('rota') do form e o objeto option: método (post) e body(data)
+            
+          /* fetch(form.action, options)
+                .then(resp => resp.json())
+                .then(json => {
+                    //faz um parse do json para formato string para poder faz o inner na div de #id == resultado
+                    resultado.innerHTML = JSON.stringify(json)
+                })
+                //Capturando erro
+                .catch(e => {
+                    resultado.innerHTML = e
+                }) */
+            /* MÉTODO UTILIZANDO AWAIT */
+             try {
+                 const resp = await fetch(form.action, options)
+                 const json = await resp.json()
+                 resultado.innerHTML = JSON.stringify(json)
+             } catch (e) {
+                resultado.innerHTML = e
+             }
+        }
+
+        /* IMPORTANTE !!!
+        
+            await -> Resolve uma promise por vez de forma sequencial, a função async aguarda
+                    até que cada chamada de await seja resolvida. Só funciona com uma promise por vez
+            .then() -> Resolve promises de modo paralelo, ou seja, mais rápido. Funciona com mais de uma promise
+        */
     </script>
 </body>
