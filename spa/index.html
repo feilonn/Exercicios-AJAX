@@ -25,6 +25,26 @@
     </nav>
     <div class="pagina"></div>
     <script>
-        // ...
+        //Url = Pagina de Destino | Seletor = onde o conteudo será colocado
+        function navegarViaAjax(url, seletor) {
+            if(!url || !seletor) return
+            const elemento = document.querySelector(seletor)
+            fetch(url)
+                //1ª Promisse pega o texto do HTML
+                .then(resposta => resposta.text())
+                .then(html => {
+                    elemento.innerHTML = html
+                })
+        }
+
+        document.querySelectorAll('[wm-link]').forEach(link => {
+            const url = link.attributes['wm-link'].value
+            const destino = link.attributes['wm-destino'].value
+
+            link.onclick = e => {
+                e.preventDefault()
+                navegarViaAjax(url, destino)
+            }
+        })
     </script>
 </body>
